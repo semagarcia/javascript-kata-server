@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:live",
+    "start": "node index.ts",
+    "serve": "nodemon index.js",
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./index.ts",
     "test": "mocha --reporter spec --compilers ts:ts-node/register test/**/*.test.ts"
   },
@@ -14,27 +15,28 @@
   },
   "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "@types/express": "^4.0.35",
-    "@types/node": "^7.0.5",
-    "express": "^4.14.1",
-    "nodemon": "^1.11.0",
-    "ts-node": "^2.1.0",
-    "typescript": "^2.2.1"
-  },
   "dependencies": {
-    "@types/socket.io": "^1.4.28",
-    "body-parser": "^1.17.0",
+    "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
     "debug": "^2.6.1",
+    "express": "^4.15.3",
     "express-session": "^1.15.1",
+    "mongoose": "^4.10.2",
     "morgan": "^1.8.1",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth": "^1.0.0",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.35",
+    "@types/node": "^7.0.5",
+    "@types/socket.io": "^1.4.28",
+    "nodemon": "^1.11.0"
   }
 }
