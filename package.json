@@ -11,8 +11,8 @@
     "ts-node": "ts-node"
   },
   "engines": {
-    "node": "6.9.1",
-    "npm": "3.10.8"
+    "node": "7.9.0",
+    "npm": "4.2.0"
   },
   "author": "Sema García",
   "license": "MIT",
