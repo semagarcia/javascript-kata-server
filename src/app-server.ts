@@ -5,6 +5,8 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as socketIO from 'socket.io';
 import * as cors from 'cors';
+//const mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
 import * as passport from 'passport/lib';
 import * as expressSession from 'express-session';
 
@@ -13,8 +15,11 @@ import { TestRoutesController } from './routes/TestController';
 import { AuthRoutesController } from './routes/AuthController';
 import { LoginRoutesController } from './routes/LoginController';
 
+import { EventsController } from './events/EventController';
+
 // Creates and configures an ExpressJS web server.
 class App {
+    //eventsController: EventsController = new EventsController();
 
     // Express app instance
     public express: express.Application;
@@ -22,9 +27,12 @@ class App {
 
     // Run configuration methods on the Express instance.
     constructor() {
+        this.connectToDatabase();
         this.express = express();
         this.middleware();
         this.routes();
+
+        //this.eventsController = new EventsController();
     }
 
     // Configure Express middleware.
@@ -55,9 +63,16 @@ class App {
 
         // routes
         this.express.use('/', router);  // Root route
+        this.express.use('/api/events', EventsController);
+
         this.express.use('/test', TestRoutesController);  // Test routes
         this.express.use('/standard-login', LoginRoutesController);  // Login routes
         this.express.use('/auth', AuthRoutesController);  // Auth routes
+    }
+
+    private connectToDatabase(): void {
+        mongoose.Promise = global.Promise;
+        mongoose.connect('mongodb://localhost:27017/kata-player');
     }
 
 }

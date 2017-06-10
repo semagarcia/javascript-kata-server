@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run ts-node index.ts",
-    "serve": "nodemon index.js",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./index.ts",
+    "serve": "nodemon --exec ./node_modules/.bin/ts-node -- ./index.ts",
     "test": "mocha --reporter spec --compilers ts:ts-node/register test/**/*.test.ts",
     "ts-node": "ts-node"
   },
