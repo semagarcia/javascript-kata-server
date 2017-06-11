@@ -1,8 +1,12 @@
 import { IndividualService } from './../individual/IndividualService';
+import { KataModel, Kata } from './../schemas/Kata';
 import { Challenge, ChallengeModel } from './../schemas/Challenge';
 
 const uuidV4 = require('node-uuid');
 const moment = require('moment');
+
+// Dependencies
+const individualKataSrv: IndividualService = new IndividualService();
 
 export class ChallengeService {
 
@@ -32,7 +36,7 @@ export class ChallengeService {
         return new Promise((resolve, reject) => {
             let challengeUUID = uuidV4().slice(0, 8);  // Save only the first 8 characters
             individualKataSrv.getRandomIndividualKata()
-                .then((randomKata) => {
+                .then((randomKata: Kata) => {
                     ChallengeModel.create({
                         challengeId: challengeUUID,
                         direction: direction,

@@ -3,7 +3,7 @@ import { Schema, Document, Model, model } from 'mongoose';
 export interface Kata extends Document {
 
     /** */
-    //_id?: string;
+    _id?: string;
 
     /** */
     name: string;
