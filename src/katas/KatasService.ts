@@ -127,10 +127,10 @@ export class KatasService {
 
                     // Update total time and save
                     stats.totalTime += statistics.time;
-                    stats.save((err, savedStats) => {
+                    /*stats.save((err, savedStats) => {
                         if(err) reject(err);
                         resolve(true);
-                    });
+                    });*/
                 } else {
                     // The user has never made an attemp
                     KataStatsModel.create({
