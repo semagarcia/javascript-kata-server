@@ -1,51 +1,72 @@
 import { Router, Request, Response } from 'express';
 import { EventService } from './EventService';
 
-// Assign router to the express.Router() instance
-const router: Router = Router();
+// Dependencies
 const eventSrv: EventService = new EventService();
 
-router.get('/', async (req: Request, res: Response) => {
+// Assign router to the express.Router() instance
+const eventsRouter: Router = Router();
+
+/**
+ * Method: 
+ * Verb: GET
+ * Route: /api/events
+ */
+eventsRouter.get('/', async (req: Request, res: Response) => {
     await eventSrv.getEvents()
-        .then((events) => {
-            res.status(200).send(events);
-        })
-        .catch((err) => {
-            console.log('getEvents()::catch => ', err);
-            res.status(400).send('KO');
-        });
+        .then((events) => res.status(200).send(events))
+        .catch((err) => res.status(400).send('KO'));
+});
+
+/**
+ * Method: 
+ * Verb: GET
+ * Route: /api/events
+ */
+eventsRouter.get('/all', async(req: Request, res: Response) => {
+    await eventSrv.getAllInfoOfEvents()
+        .then((events) => res.status(200).send(events))
+        .catch((err) => res.status(400).send('KO')); 
+});
+
+/**
+ * Method: 
+ * Verb: POST
+ * Route: /api/events
+ */
+eventsRouter.post('', async(req: Request, res: Response) => {
+    await eventSrv.createEvent(
+        req.body.name, 
+        req.body.startDate, 
+        req.body.description, 
+        req.body.urlLoc, 
+        req.body.endDate)
+            .then((createdEvent) => res.status(200).send(createdEvent))
+            .catch((err) => res.status(400).send('KO'));
+});
+
+/**
+ * Method: 
+ * Verb: PUT
+ * Route: /api/events
+ */
+eventsRouter.get('', async(req: Request, res: Response) => {
+    await eventSrv.editEvent(req.body.eventToModify)
+        .then((updatedEvent) => res.status(200).send(updatedEvent))
+        .catch((err) => res.status(400).send('KO'));
+});
+
+/**
+ * Method: 
+ * Verb: POST
+ * Route: /api/events
+ */
+eventsRouter.get('/delete', async(req: Request, res: Response) => {
+    await eventSrv.deleteEvents(req.body.eventIds)
+        .then((deleteResult) => res.status(200).send(deleteResult))
+        .catch((err) => res.status(400).send('KO'));
+        
 });
 
 // Export the express.Router() instance
-export const EventsController: Router = router;
-
-
-
-// -------------------------------------------
-/*export class EventsController {
-    public eventsRouter: Router = Router();
-    private eventSrv: EventService = new EventService();
-
-    constructor() {
-        this.eventsRouter.get('/', this.m);
-    }
-
-    //
-    // Method:
-    // Route: 
-    //
-    private m(req: Request, res: Response) {
-        async() => {
-            await this.eventSrv.getEvents()
-                .then((events) => {
-                    console.log('getEvents()::then => ', events);
-                    res.status(200).send('OK');
-                })
-                .catch((err) => {
-                    console.log('getEvents()::catch => ', err);
-                    res.status(400).send('KO');
-                });
-        }
-    }
-
-}*/
+export const EventsController: Router = eventsRouter;
