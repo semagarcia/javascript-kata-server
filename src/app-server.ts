@@ -16,6 +16,8 @@ import { AuthRoutesController } from './routes/AuthController';
 import { LoginRoutesController } from './routes/LoginController';
 
 import { EventsController } from './events/EventController';
+import { TrainingPathController } from './training/TrainingController';
+import { UserController } from './users/UserController';
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -64,10 +66,8 @@ class App {
         // routes
         this.express.use('/', router);  // Root route
         this.express.use('/api/events', EventsController);
-
-        this.express.use('/test', TestRoutesController);  // Test routes
-        this.express.use('/standard-login', LoginRoutesController);  // Login routes
-        this.express.use('/auth', AuthRoutesController);  // Auth routes
+        this.express.use('/api/training-paths', TrainingPathController);
+        this.express.use('/api/users', UserController);
     }
 
     private connectToDatabase(): void {
