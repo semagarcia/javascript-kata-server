@@ -11,10 +11,6 @@ import * as passport from 'passport/lib';
 import * as expressSession from 'express-session';
 
 // Route controllers
-import { TestRoutesController } from './routes/TestController';
-import { AuthRoutesController } from './routes/AuthController';
-import { LoginRoutesController } from './routes/LoginController';
-
 import { ChallengesController } from './challenges/ChallengeController';
 import { EventsController } from './events/EventController';
 import { IndividualController } from './individual/IndividualController';
