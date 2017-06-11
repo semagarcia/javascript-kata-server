@@ -19,6 +19,7 @@ import { ChallengesController } from './challenges/ChallengeController';
 import { EventsController } from './events/EventController';
 import { IndividualController } from './individual/IndividualController';
 import { KatasController } from './katas/KatasController';
+import { LoginController } from './login/LoginController';
 import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
@@ -73,6 +74,7 @@ class App {
         this.express.use('/api/events', EventsController);
         this.express.use('/api/individual', IndividualController);
         this.express.use('/api/katas', KatasController);
+        this.express.use('/api/login', LoginController);
         this.express.use('/api/ranking', RankingController);
         this.express.use('/api/training-paths', TrainingPathController);
         this.express.use('/api/users', UserController);
