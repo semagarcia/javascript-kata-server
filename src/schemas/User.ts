@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 export interface User extends Document {
 
     /** */
+    _id?: string;
+
+    /** */
     name: string;
 
     /** */
