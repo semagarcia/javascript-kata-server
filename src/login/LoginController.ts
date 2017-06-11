@@ -34,7 +34,7 @@ loginRouter.post('/', async(req: Request, res: Response) => {
  * Verb:
  * Route: 
  */
-loginRouter.get('/', async(req: Request, res: Response) => {
+loginRouter.get('/session', async(req: Request, res: Response) => {
     
 });
 
@@ -43,8 +43,18 @@ loginRouter.get('/', async(req: Request, res: Response) => {
  * Verb:
  * Route: 
  */
-loginRouter.get('/', async(req: Request, res: Response) => {
-    
+loginRouter.get('/logout', async(req: Request, res: Response) => {
+    /*if(req.session.username) {
+            let username = req.session.username;
+            req.session.destroy((err) => {
+                if(err) {
+                    res.status(400).json({ result: false, err: err });
+                }
+                res.status(200).json({ user: username, result: true });
+            });
+        } else {
+            res.status(200).json({ result: true })
+        }*/
 });
 
 // Export the express.Router() instance
