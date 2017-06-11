@@ -1,15 +1,22 @@
 import { Router, Request, Response } from 'express';
+import { IndividualService } from './IndividualService';
+
+// Dependencies
+const individualKataSrv: IndividualService = new IndividualService();
 
 // Assign router to the express.Router() instance
-const router: Router = Router();
+const individualRouter: Router = Router();
 
 /**
  * Method:
  * Route: 
  */
-router.get('/', (req: Request, res: Response) => {
-    res.send('Hello, individual!');
+individualRouter.get('/', async(req: Request, res: Response) => {
+    // { status:'ok', kata: randomKata }
+    await individualKataSrv.getRandomIndividualKata()
+        .then((randomKata) => res.status(200).send(randomKata))
+        .catch((err) => res.status(400).send('KO'));
 });
 
 // Export the express.Router() instance
-export const IndividualController: Router = router;
+export const IndividualController: Router = individualRouter;
