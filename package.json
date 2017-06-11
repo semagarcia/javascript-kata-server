@@ -36,7 +36,8 @@
     "passport-twitter": "^1.0.4",
     "socket.io": "^1.7.3",
     "ts-node": "^2.1.0",
-    "typescript": "^2.2.1"
+    "typescript": "^2.2.1",
+    "vm2": "^3.4.6"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
