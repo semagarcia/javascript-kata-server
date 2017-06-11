@@ -15,7 +15,11 @@ import { TestRoutesController } from './routes/TestController';
 import { AuthRoutesController } from './routes/AuthController';
 import { LoginRoutesController } from './routes/LoginController';
 
+import { ChallengesController } from './challenges/ChallengeController';
 import { EventsController } from './events/EventController';
+import { IndividualController } from './individual/IndividualController';
+import { KatasController } from './katas/KatasController';
+import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
 
@@ -65,7 +69,11 @@ class App {
 
         // routes
         this.express.use('/', router);  // Root route
+        this.express.use('/api/challenges', ChallengesController);
         this.express.use('/api/events', EventsController);
+        this.express.use('/api/individual', IndividualController);
+        this.express.use('/api/katas', KatasController);
+        this.express.use('/api/ranking', RankingController);
         this.express.use('/api/training-paths', TrainingPathController);
         this.express.use('/api/users', UserController);
     }
