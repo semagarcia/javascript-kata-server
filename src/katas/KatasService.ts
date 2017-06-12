@@ -66,30 +66,30 @@ export class KatasService {
                 sandbox: {
                     deepEqual: require('assert').deepEqual,
                     console: {
-                        log: (...args) => args.forEach(arg => log += JSON.stringify(arg) + "\n")
+                        log: (...args) => args.forEach(arg => log += JSON.stringify(arg) + '#')
                     }
                 }
             });
 
-            KataModel.findOne({ name: kataName, enabled: true }, (err, kata: Kata) => {
+            KataModel.findOne({ name: kataName, enabled: true }, 'tests', (err, kata: Kata) => {
                 if(err) reject(err);
-                let tests = kata.tests;
-                //for(let test of tests) {
-                for(let i=0; i<tests.length; i++) {
+
+                var tests = JSON.parse(JSON.stringify(kata.tests));
+                for(let test of tests) {
                     log = '';
                     try {
-                        console.log('---> kata.test: ', tests[i]);
-                        console.log(`--> ${kataName} # input: ${tests[i].input} # output: ${tests[i].output}`);
-                        vm.run(`${kataFunction} deepEqual(${kataName}(${tests[i].input}), ${tests[i].output})`);
-                        tests[i]['result'] = true;
-                        delete tests[i]['message'];
+                        vm.run(`${kataFunction} deepEqual(${kataName}(${test.input}), ${test.output})`);
+                        test['result'] = true;
+                        delete test['message'];
                     } catch(err) {
-                        tests[i]['result'] = false;
-                        tests[i]['message'] = err.toString();
-                        console.log(' ===> Failed to execute due to: ', err);
+                        test['result'] = false;
+                        test['message'] = err.toString();
+                        //console.log(' ===> Failed to execute due to: ', err);
                     }
-                    tests[i]['log'] = log;
-                }         
+                    test['log'] = log;
+                }
+
+                // Analyse and compute the result 
                 resolve({
                     executionResult: tests.every(test => test['result']),
                     output: tests
