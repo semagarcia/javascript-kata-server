@@ -66,7 +66,16 @@ export class KatasService {
                 sandbox: {
                     deepEqual: require('assert').deepEqual,
                     console: {
-                        log: (...args) => args.forEach(arg => log += JSON.stringify(arg) + '#')
+                        log: (...args) => {
+                            if(args && args.length === 1) {
+                                // The console.log() call is composed by only one argument (no need separator)
+                                log += JSON.stringify(args[0]).slice(1, -1);
+                            } else if(args && args.length > 1) {
+                                // Pass over each argument
+                                args.forEach(arg => log += JSON.stringify(arg).slice(1, -1));
+                                log += '#';  // End of each-individual console.log() call (specific separator)
+                            }
+                        }
                     }
                 }
             });
@@ -84,7 +93,6 @@ export class KatasService {
                     } catch(err) {
                         test['result'] = false;
                         test['message'] = err.toString();
-                        //console.log(' ===> Failed to execute due to: ', err);
                     }
                     test['log'] = log;
                 }
@@ -101,7 +109,7 @@ export class KatasService {
     /**
      * Endpoint to 
      */
-    async updateKataStatistics(statistics: any, username: string, email: string) {
+    async updateKataStatistics(statistics: any, username: string) {
         return new Promise((resolve, reject) => {
             KataStatsModel.findOne({ username: username })
             .then((stats: KataStats) => {
@@ -137,7 +145,7 @@ export class KatasService {
                     // The user has never made an attemp
                     KataStatsModel.create({
                         username: username,
-                        email: email,
+                        email: 'em@ail.com',
                         event: 'JSDayES2017',
                         stats: [{
                             kata: statistics.kata,

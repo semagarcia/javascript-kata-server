@@ -63,9 +63,8 @@ katasRouter.post('/stats/register', async(req: Request, res: Response) => {
     // { result: result }
     await katasSrv.updateKataStatistics(
         req.body.stats, 
-        null, null
-        /*req.session.username, 
-        req.session.email*/)
+        null
+        /*req.session.username*/)
             .then(result => res.send(result))
             .catch((err) => res.status(400).send(err));
 });
