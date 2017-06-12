@@ -15,7 +15,7 @@ const challengeRouter: Router = Router();
 challengeRouter.get('/', async(req: Request, res: Response) => {
     // { challenges:Array.from(challenges) }
     await challengeSrv.getChallenges()
-        .then((challenges) => res.status(200).send(challenges))
+        .then((challenges) => res.status(200).json(challenges))
         .catch((err) => res.status(400).send('KO'));
 });
 
@@ -27,7 +27,7 @@ challengeRouter.get('/', async(req: Request, res: Response) => {
 challengeRouter.get('/challenge/:challengeId', async(req: Request, res: Response) => {
     // { challenge: challenge }
     await challengeSrv.getChallenge(req.params.challengeId)
-        .then((challenge) => res.status(200).send(challenge))
+        .then((challenge) => res.status(200).json(challenge))
         .catch((err) => res.status(400).send('KO'));
 });
 
@@ -37,11 +37,12 @@ challengeRouter.get('/challenge/:challengeId', async(req: Request, res: Response
  * Route: /api/challenges/create
  */
 challengeRouter.post('/create', async(req: Request, res: Response) => {
+    // { uuid: uuid }
     if(req.body.playerId, req.body.direction && req.body.duration >= 0 && req.body.mode) {
             await challengeSrv.createNewChallenge(
                 req.body.playerId, req.body.direction, req.body.duration, req.body.mode, null)
-                .then((uuid) => { res.send({ uuid: uuid }) })
-                .catch((err) => { res.status(500).send({ error: 'C1OP3' }) });
+                .then((uuid) => res.json(uuid))
+                .catch((err) => res.status(500).send({ error: 'C1OP3' }));
         } else {
             res.status(500).send('Minimum fields not filled');
         }
@@ -52,10 +53,10 @@ challengeRouter.post('/create', async(req: Request, res: Response) => {
  * Verb:
  * Route: /api/challenges/check-challenge-id/:challengeId
  */
-challengeRouter.get('/', async(req: Request, res: Response) => {
+challengeRouter.get('/check-challenge-id/:challengeId', async(req: Request, res: Response) => {
     // { exists:existsChallengeId }
     await challengeSrv.checkChallengeId(req.params.challengeId)
-        .then((existsChallengeId) => res.status(200).send(existsChallengeId))
+        .then((existsChallengeId) => res.status(200).json(existsChallengeId))
         .catch((err) => res.status(400).send('KO'));
 });
 
@@ -64,9 +65,9 @@ challengeRouter.get('/', async(req: Request, res: Response) => {
  * Verb:
  * Route: /api/challenges/join
  */
-challengeRouter.post('/', async(req: Request, res: Response) => {
+challengeRouter.post('/join', async(req: Request, res: Response) => {
     await challengeSrv.joinPlayerIntoChallenge(req.body.challengeId, req.body.username, req.body.playerId)
-        .then((challenge) => res.status(200).send(challenge))
+        .then((challenge) => res.status(200).json(challenge))
         .catch((err) => res.status(400).send('KO'));
 });
 
