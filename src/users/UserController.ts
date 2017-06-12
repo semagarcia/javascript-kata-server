@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { UsersService } from './UserService';
-import { User, UserModel } from './../schemas/user';
+import { User, UserModel } from './../schemas/User';
 
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
-const config = require('./../config.json');
+const config = require('./../config');
 
 // Dependencies
 const usersSrv: UsersService = new UsersService();
@@ -30,7 +30,7 @@ userRouter.get('/', async(req: Request, res: Response) => {
  */
 userRouter.get('/user', async(req: Request, res: Response) => {
     let token = req.headers.authorization.split(' ')[1];
-    let jwtInfo = jwt.verify(token, config.secretJwt);
+    let jwtInfo = jwt.verify(token, config.secretJWT);
     await usersSrv.getUserInfoById(jwtInfo.sub)
         .then((user) => res.send(user))
         .catch((err) => res.status(400).send('KO'));

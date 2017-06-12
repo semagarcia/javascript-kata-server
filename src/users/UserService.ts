@@ -1,7 +1,7 @@
 import { User, UserModel } from './../schemas/User';
 
 const bcrypt = require('bcryptjs');
-const config = require('./../config.json');
+const config = require('./../config');
 const BCRYPT_SALT_ROUNDS = 12;
 
 export class UsersService {

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
-const config = require('./../config.json');
+const config = require('./../config');
 
 import { User, UserModel } from './../schemas/User';
 
@@ -25,7 +25,7 @@ export class LoginService {
                                     exp: moment().add(60, 'minutes').unix(),  // Expires in 60 minutes
                                     name: user.username,
                                     rol: user.rol
-                                }, config.secretJwt)
+                                }, config.secretJWT)
                             });
                         } else {
                             reject(false);
