@@ -11,7 +11,7 @@ const individualRouter: Router = Router();
  * Method:
  * Route: 
  */
-individualRouter.get('/', async(req: Request, res: Response) => {
+individualRouter.get('/random', async(req: Request, res: Response) => {
     // { status:'ok', kata: randomKata }
     await individualKataSrv.getRandomIndividualKata()
         .then((randomKata) => res.status(200).send(randomKata))
