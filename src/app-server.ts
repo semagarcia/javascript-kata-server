@@ -20,7 +20,8 @@ import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
 
-const PORT = process.env.PORT || 3000;
+const config = require('./config');
+const PORT = config.port;
 
 export default class Server {
     private io: any;
@@ -48,7 +49,7 @@ export default class Server {
 
     private connectToDatabase(): void {
         (<any>mongoose).Promise = global.Promise;
-        mongoose.connect('mongodb://localhost:27017/kata-player');
+        mongoose.connect(config.db);
     }
 
     private createServer(): void {
