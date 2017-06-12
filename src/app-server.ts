@@ -22,7 +22,7 @@ import { UserController } from './users/UserController';
 
 const PORT = process.env.PORT || 3000;
 
-class Server {
+export default class Server {
     private io: any;
     public app: any;
     private server: any;
@@ -47,7 +47,7 @@ class Server {
     }
 
     private connectToDatabase(): void {
-        mongoose.Promise = global.Promise;
+        (<any>mongoose).Promise = global.Promise;
         mongoose.connect('mongodb://localhost:27017/kata-player');
     }
 
@@ -107,4 +107,5 @@ class Server {
     }
 }
 
-export = Server.bootstrap().app;
+//export = Server.bootstrap().app;
+Server.bootstrap().app;
