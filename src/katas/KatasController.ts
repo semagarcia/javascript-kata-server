@@ -35,10 +35,10 @@ katasRouter.get('/kata/:kataId', async(req: Request, res: Response) => {
  * Verb:
  * Route: /api/katas/execute
  */
-katasRouter.post('/', async(req: Request, res: Response) => {
+katasRouter.post('/execute', async(req: Request, res: Response) => {
     // { result: kataResult }
     await katasSrv.executeTest(req.body.function, req.body.name)
-        .then(kataResult => res.send(kataResult))
+        .then(kataResult => res.status(200).json(kataResult))
         .catch((err) => res.status(400).send(err));
 });
 
@@ -47,7 +47,7 @@ katasRouter.post('/', async(req: Request, res: Response) => {
  * Verb:
  * Route: /api/katas/stats
  */
-katasRouter.get('/', async(req: Request, res: Response) => {
+katasRouter.get('/stats', async(req: Request, res: Response) => {
     // { stats: katasStats }
     await katasSrv.getAllKatasStatistics()
         .then(katasStats => res.send(katasStats))

@@ -21,7 +21,7 @@ export class KatasService {
      */
     async getKataById(kataId: string) {
         return new Promise((resolve, reject) => {
-            KataModel.findById({ _id: kataId, enabled: true }).exec((err, kata) => {
+            KataModel.findById({ _id: kataId, enabled: true }, { tests: 0 }).exec((err, kata) => {
                 if(err) reject(err);
                 resolve(kata);
             });
@@ -71,27 +71,29 @@ export class KatasService {
                 }
             });
 
-            var kata = require(`./../../katas/${kataName}/kata.js`);
-            var tests = kata.tests;
-            for(var test of tests) {
-                log = '';
-                try {
-                    vm.run(`
-                        ${kataFunction}
-                        deepEqual(${kataName}(${test.input}), ${test.output})
-                    `);
-                    test['result'] = true;
-                    delete test.message;
-                } catch(err) {
-                    test['result'] = false;
-                    test['message'] = err.toString();
-                    console.log(' ===> Failed to execute due to: ', err);
-                }
-                test['log'] = log;
-            }               
-            resolve({
-                executionResult: tests.every(test => test['result']),
-                output: tests
+            KataModel.findOne({ name: kataName, enabled: true }, (err, kata: Kata) => {
+                if(err) reject(err);
+                let tests = kata.tests;
+                //for(let test of tests) {
+                for(let i=0; i<tests.length; i++) {
+                    log = '';
+                    try {
+                        console.log('---> kata.test: ', tests[i]);
+                        console.log(`--> ${kataName} # input: ${tests[i].input} # output: ${tests[i].output}`);
+                        vm.run(`${kataFunction} deepEqual(${kataName}(${tests[i].input}), ${tests[i].output})`);
+                        tests[i]['result'] = true;
+                        delete tests[i]['message'];
+                    } catch(err) {
+                        tests[i]['result'] = false;
+                        tests[i]['message'] = err.toString();
+                        console.log(' ===> Failed to execute due to: ', err);
+                    }
+                    tests[i]['log'] = log;
+                }         
+                resolve({
+                    executionResult: tests.every(test => test['result']),
+                    output: tests
+                });
             });
         });
     }
