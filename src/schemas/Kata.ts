@@ -3,9 +3,6 @@ import { Schema, Document, Model, model } from 'mongoose';
 export interface Kata extends Document {
 
     /** */
-    _id?: string;
-
-    /** */
     name: string;
 
     /** */
@@ -22,6 +19,9 @@ export interface Kata extends Document {
 
     /** */
     initialBodyFunction: string;
+
+    /** */
+    tests: Array<{input: any, output: any}>;
 
     /** */
     enabled: boolean;
@@ -44,6 +44,10 @@ export let KataSchema = new Schema({
                                 { constraints: [{ type: String, required: false }] },
     ],
     initialBodyFunction:    { type: String, required: true },
+    tests:                  [
+                                { input: { type: String, required: false } },
+                                { output: { type: String, required: false } }
+    ],
     enabled:                { type: Boolean, required: true }
 }, {
     timestamps: {
