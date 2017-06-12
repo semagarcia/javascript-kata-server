@@ -14,8 +14,10 @@ const loginRouter: Router = Router();
  * Route: 
  */
 loginRouter.post('/', async(req: Request, res: Response) => {
+    console.log('standardLogin');
     await loginSrv.standardLogin(req.body.user, req.body.password)
         .then((user: User) => {
+            console.log('promesa resuelta correctamente: ', user);
             //let session = req.session;
             //session.username = req.body.user;
             //session.email = req.body.email;
@@ -43,7 +45,7 @@ loginRouter.get('/session', async(req: Request, res: Response) => {
  * Verb:
  * Route: 
  */
-loginRouter.get('/logout', async(req: Request, res: Response) => {
+loginRouter.delete('/', async(req: Request, res: Response) => {
     /*if(req.session.username) {
             let username = req.session.username;
             req.session.destroy((err) => {
@@ -55,6 +57,7 @@ loginRouter.get('/logout', async(req: Request, res: Response) => {
         } else {
             res.status(200).json({ result: true })
         }*/
+    res.status(200).send();
 });
 
 // Export the express.Router() instance
