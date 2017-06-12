@@ -3,9 +3,9 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import * as http from 'http';
 import * as socketIO from 'socket.io';
 import * as cors from 'cors';
-//const mongoose = require('mongoose');
 import * as mongoose from 'mongoose';
 import * as passport from 'passport/lib';
 import * as expressSession from 'express-session';
@@ -20,60 +20,30 @@ import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
 
-// Creates and configures an ExpressJS web server.
-class App {
-    //eventsController: EventsController = new EventsController();
+const PORT = process.env.PORT || 3000;
 
-    // Express app instance
-    public express: express.Application;
-    public io: SocketIO.Server;
+class Server {
+    private io: any;
+    public app: any;
+    private server: any;
+    private port: number;
 
-    // Run configuration methods on the Express instance.
+    public static bootstrap(): Server {
+        return new Server();
+    }
+
     constructor() {
+        this.createApp();
         this.connectToDatabase();
-        this.express = express();
+        this.createServer();
         this.middleware();
         this.routes();
-
-        //this.eventsController = new EventsController();
+        this.sockets();
+        this.listen();
     }
 
-    // Configure Express middleware.
-    private middleware(): void {
-        this.express.use(cors());
-        this.express.use(logger('dev'));
-        this.express.use(cookieParser());
-        this.express.use(bodyParser.json());
-        this.express.use(bodyParser.urlencoded({ extended: false }));
-        this.express.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
-        this.express.use(passport.initialize());
-        this.express.use(passport.session());
-    }
-
-    // Configure API endpoints.
-    private routes(): void {
-        /* This is just to get up and running, and to make sure what we've got is
-        * working so far. This function will change when we start to add more
-        * API endpoints */
-        let router = express.Router();
-
-        // placeholder route handler
-        router.get('/', (req, res, next) => {
-            res.json({
-                message: 'OK'
-            });
-        });
-
-        // routes
-        this.express.use('/', router);  // Root route
-        this.express.use('/api/challenges', ChallengesController);
-        this.express.use('/api/events', EventsController);
-        this.express.use('/api/individual', IndividualController);
-        this.express.use('/api/katas', KatasController);
-        this.express.use('/api/login', LoginController);
-        this.express.use('/api/ranking', RankingController);
-        this.express.use('/api/training-paths', TrainingPathController);
-        this.express.use('/api/users', UserController);
+    private createApp(): void {
+        this.app = express();
     }
 
     private connectToDatabase(): void {
@@ -81,6 +51,60 @@ class App {
         mongoose.connect('mongodb://localhost:27017/kata-player');
     }
 
+    private createServer(): void {
+        this.server = http.createServer(this.app);
+    }
+
+    private middleware(): void {
+        this.app.use(logger('dev'));
+        this.app.use(cookieParser());
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
+
+        //cors settings
+        this.app.use(function(req, res, next) {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
+            res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE,OPTIONS');
+            next();
+        });
+        this.app.use(cors());
+    }
+
+    private routes(): void {
+        this.app.use('/api/status', (req, res, next) => { res.status(200).send('OK') });
+        this.app.use('/api/challenges', ChallengesController);
+        this.app.use('/api/events', EventsController);
+        this.app.use('/api/individual', IndividualController);
+        this.app.use('/api/katas', KatasController);
+        this.app.use('/api/login', LoginController);
+        this.app.use('/api/ranking', RankingController);
+        this.app.use('/api/training-paths', TrainingPathController);
+        this.app.use('/api/users', UserController);
+    }
+
+    private sockets(): void {
+        this.io = socketIO(this.server);
+    }
+
+    private listen(): void {
+        this.server.listen(PORT, () => {
+            console.log('Running server on port %s', PORT);
+        });
+
+        this.io.on('connect', (socket: any) => {
+            console.log('Connected client on port %s.', PORT);
+            /*socket.on('message', (m: Message) => {
+                console.log('[server](message): %s', JSON.stringify(m));
+                this.io.emit('message', m);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Client disconnected');
+            });*/
+        });
+    }
 }
 
-export default new App().express;
+export = Server.bootstrap().app;
