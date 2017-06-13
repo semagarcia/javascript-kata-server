@@ -62,6 +62,7 @@ export default class Server {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
+        this.app.use(express.static('/public'));
 
         //cors settings
         this.app.use(function(req, res, next) {
@@ -83,19 +84,22 @@ export default class Server {
         this.app.use('/api/ranking', RankingController);
         this.app.use('/api/training-paths', TrainingPathController);
         this.app.use('/api/users', UserController);
+        
+        //
+        this.app.use('/', (req, res) => {
+            req.sendFile('public/index.html');
+        });
     }
 
     private sockets(): void {
         this.io = socketIO(this.server);
-    }
-
-    private listen(): void {
-        this.server.listen(PORT, () => {
-            console.log('Running server on port %s', PORT);
-        });
-
-        this.io.on('connect', (socket: any) => {
+        this.io.on('connection', (socket: any) => {
             console.log('Connected client on port %s.', PORT);
+
+            socket.on('message', (message) => {
+                console.log('>> WsMessage received: ', message);
+            });
+
             /*socket.on('message', (m: Message) => {
                 console.log('[server](message): %s', JSON.stringify(m));
                 this.io.emit('message', m);
@@ -104,6 +108,12 @@ export default class Server {
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
             });*/
+        });
+    }
+
+    private listen(): void {
+        this.server.listen(PORT, () => {
+            console.log('Running server on port %s', PORT);
         });
     }
 }
