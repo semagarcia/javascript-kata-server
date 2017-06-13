@@ -62,7 +62,7 @@ export default class Server {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
-        this.app.use(express.static('/public'));
+        this.app.use(express.static('./../public'));
 
         //cors settings
         this.app.use(function(req, res, next) {
@@ -86,8 +86,8 @@ export default class Server {
         this.app.use('/api/users', UserController);
         
         //
-        this.app.use('/', (req, res) => {
-            res.sendFile('public/index.html');
+        this.app.get('/', (req, res) => {
+            res.sendFile('./../public/index.html', {root: __dirname});
         });
     }
 
