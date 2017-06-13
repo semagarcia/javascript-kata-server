@@ -62,7 +62,6 @@ export default class Server {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
-        this.app.use(express.static('./../public'));
 
         //cors settings
         this.app.use(function(req, res, next) {
@@ -85,10 +84,20 @@ export default class Server {
         this.app.use('/api/training-paths', TrainingPathController);
         this.app.use('/api/users', UserController);
         
-        //
-        this.app.get('/', (req, res) => {
-            res.sendFile('./../public/index.html', {root: __dirname});
+        // Index.html
+        this.app.get('/', (req, res) => { res.sendfile(path.resolve('public/index.html')) });
+
+        // JS and CSS files
+        this.app.get('/:file', (req, res) => {
+            res.sendfile(path.resolve('public/' + req.params.file));
         });
+
+        // Images and fonts
+        this.app.get('/assets/images/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/images/' + req.params.staticFile)) });
+        this.app.get('/assets/fonts/noto/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/fonts/noto/' + req.params.staticFile)) });
+        this.app.get('/assets/fonts/roboto/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/fonts/roboto/' + req.params.staticFile)) });
+        //this.app.use(express.static(path.join(__dirname, 'public')));
+        //this.app.use('/assets/images', express.static(path.join(__dirname, 'public/assets/images')));
     }
 
     private sockets(): void {
