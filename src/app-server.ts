@@ -87,7 +87,7 @@ export default class Server {
         
         //
         this.app.use('/', (req, res) => {
-            req.sendFile('public/index.html');
+            res.sendFile('public/index.html');
         });
     }
 
