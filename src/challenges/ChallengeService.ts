@@ -32,6 +32,15 @@ export class ChallengeService {
         });
     }
 
+    checkIfChallengeIsReadyToStart(challengeId): Promise<String> {
+        return new Promise((resolve, reject) => {
+            ChallengeModel.findOne({ challengeId: challengeId }, {}, (err, challenge) => {
+                if(err) reject('ERROR');
+                resolve((challenge && challenge.playerB && challenge.usernamePlayerB) ? 'READY' : 'WAITING');
+            });
+        });
+    }
+
     createNewChallenge(playerSocketId: string, direction: string, duration: number, mode: string, event: string): Promise<String> {
         return new Promise((resolve, reject) => {
             let challengeUUID = uuidV4().slice(0, 8);  // Save only the first 8 characters
@@ -72,21 +81,17 @@ export class ChallengeService {
                 if(err) reject(err);
                 if(challenge && challenge.status !== 'WAITING') {
                     // Playing or not valid challenge (expired or ended); please, create a new one
-                    console.log('playing or not valid challenge');
                     reject(false);
                 } else if(challenge && challenge.status === 'WAITING' && !challenge.playerA) {  
                     challenge.status = 'WAITING';
                     challenge.playerA = playerId;
                     challenge.usernamePlayerA = username;
-                    console.log('PlayerA joined');
                     this.saveChallengeUpdate(challenge, resolve, reject);
                 } else if(challenge && challenge.status === 'WAITING' && challenge.playerA && !challenge.playerB) {
                     // Allow more than one player??????????????
                     challenge.status = 'PLAYING';
                     challenge.playerB = playerId;
                     challenge.usernamePlayerB = username;
-                    console.log('PlayerB joined');
-                    //this.streamingGtw.startSyncChallenge(challenge.challengeId, 'playerB has joined into challenge');
                     this.saveChallengeUpdate(challenge, resolve, reject);
                 } else 
                     reject(false);
