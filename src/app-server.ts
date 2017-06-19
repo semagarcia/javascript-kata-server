@@ -20,6 +20,10 @@ import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
 
+// Services
+import { ChallengeService } from './challenges/ChallengeService';
+const challengeSrv = new ChallengeService();
+
 const config = require('./config');
 const PORT = config.port;
 
@@ -103,36 +107,40 @@ export default class Server {
     private sockets(): void {
         this.io = socketIO(this.server);
         this.io.on('connection', (socket: SocketIO.Socket) => {
-            console.log('Connected client on port %s.', PORT);
-
-            socket.on('message', (message) => {
-                console.log('>> WsMessage received: ', message);
-            });
-
             socket.on('challenge', (message) => {
-                console.log('Challenge message!! ', message);
                 if(message && message.event === 'joinToChallenge') {
                     socket.join(message.challengeId);
                 } else if(message && message.event === 'playerReady') {
                     socket.join(message.challengeId);
-                    socket.broadcast.to(message.challengeId).emit('challenge', message.playerName + ' has joined!');
+                    socket.broadcast.to(message.challengeId).emit('challenge', {
+                        event: 'playerReady',
+                        playerId: socket.id,
+                        who: message.playerName
+                    });
+
+                    //
+                    challengeSrv.checkIfChallengeIsReadyToStart(message.challengeId)
+                        .then((challengeStatus) => {
+                            if(challengeStatus && challengeStatus === 'READY')
+                                socket.broadcast.to(message.challengeId).emit('challenge', {
+                                    challengeId: message.challengeId,
+                                    event: 'startedChallenge',
+                                    status: 'READY'
+                                })
+                        })
+                        .catch(() => socket.broadcast.to(message.challengeId).emit('challenge', {}));
                 } else if(message && message.event === 'codeUpdated') {
                     socket.broadcast.to(message.challengeId).emit('challenge', {
                         challengeId: message.challengeId,
-                        who: message.playerName,
-                        code: message.code
+                        code: message.code,
+                        event: 'codeUpdated',
+                        playerId: socket.id,
+                        who: message.who
                     });
-                } else if(message && message.event === 'startedChallenge') {
-
                 }
             });
 
-            /*socket.on('message', (m: Message) => {
-                console.log('[server](message): %s', JSON.stringify(m));
-                this.io.emit('message', m);
-            });
-
-            socket.on('disconnect', () => {
+            /*socket.on('disconnect', () => {
                 console.log('Client disconnected');
             });*/
         });
