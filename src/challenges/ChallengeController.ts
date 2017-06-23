@@ -68,7 +68,7 @@ challengeRouter.get('/check-challenge-id/:challengeId', async(req: Request, res:
 challengeRouter.post('/join', async(req: Request, res: Response) => {
     await challengeSrv.joinPlayerIntoChallenge(req.body.challengeId, req.body.username, req.body.playerId)
         .then((challenge) => res.status(200).json(challenge))
-        .catch((err) => res.status(400).send('KO'));
+        .catch((err) => res.status(400).json('KO'));
 });
 
 // Export the express.Router() instance
