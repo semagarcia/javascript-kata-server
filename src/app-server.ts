@@ -108,11 +108,14 @@ export default class Server {
         this.io = socketIO(this.server);
         this.io.on('connection', (socket: SocketIO.Socket) => {
             socket.on('challenge', (message) => {
+                console.log('Message: ', message);
                 if(message && message.event === 'joinToChallenge') {
                     socket.join(message.challengeId);
                 } else if(message && message.event === 'playerReady') {
                     socket.join(message.challengeId);
-                    socket.broadcast.to(message.challengeId).emit('challenge', {
+                    socket.join(message.challengeId);
+                    this.io.in(message.challengeId).emit('challenge', {
+                    //socket.broadcast.to(message.challengeId).emit('challenge', {
                         event: 'playerReady',
                         playerId: socket.id,
                         who: message.playerName
@@ -121,16 +124,24 @@ export default class Server {
                     //
                     challengeSrv.checkIfChallengeIsReadyToStart(message.challengeId)
                         .then((challengeStatus) => {
-                            if(challengeStatus && challengeStatus === 'READY')
-                                socket.broadcast.to(message.challengeId).emit('challenge', {
+                            if(challengeStatus && challengeStatus === 'READY') {
+                                //socket.broadcast.to(message.challengeId).emit('challenge', {
+                                this.io.in(message.challengeId).emit('challenge', {
                                     challengeId: message.challengeId,
                                     event: 'startedChallenge',
                                     status: 'READY'
-                                })
-                        })
-                        .catch(() => socket.broadcast.to(message.challengeId).emit('challenge', {}));
+                                });
+                            } else {
+                                //socket.broadcast.to(message.challengeId).emit('challenge', {
+                                this.io.in(message.challengeId).emit('challenge', {
+                                    msg: 'player joined, waiting the other one'
+                                });
+                            }
+                        })  
+                        .catch(() => socket.broadcast.to(message.challengeId).emit('challenge', { err: 'Challenge not allowed' }));
                 } else if(message && message.event === 'codeUpdated') {
-                    socket.broadcast.to(message.challengeId).emit('challenge', {
+                    //socket.broadcast.to(message.challengeId).emit('challenge', {
+                    this.io.in(message.challengeId).emit('challenge', {
                         challengeId: message.challengeId,
                         code: message.code,
                         event: 'codeUpdated',
