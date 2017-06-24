@@ -10,7 +10,7 @@ export class LoginService {
     async standardLogin(username: string, password: string) {
         return new Promise((resolve, reject) => {
             UserModel.findOne({ username: username, enabled: true }, (err, user: User) => {
-                if(err) reject(`Error at login: ${err}`);
+                if(err) return reject(`Error at login: ${err}`);
                 if(!user) {
                     console.log(`Unexisting user: ${username}`);
                     return reject('Error at login');
