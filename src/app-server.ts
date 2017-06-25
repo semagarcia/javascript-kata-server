@@ -108,46 +108,48 @@ export default class Server {
         this.io = socketIO(this.server);
         this.io.on('connection', (socket: SocketIO.Socket) => {
             socket.on('challenge', (message) => {
-                console.log('Message: ', message);
+
                 if(message && message.event === 'joinToChallenge') {
                     socket.join(message.challengeId);
                 } else if(message && message.event === 'playerReady') {
                     socket.join(message.challengeId);
-                    socket.join(message.challengeId);
-                    this.io.in(message.challengeId).emit('challenge', {
-                    //socket.broadcast.to(message.challengeId).emit('challenge', {
+                    socket.to(message.challengeId).emit('challenge', {
                         event: 'playerReady',
                         playerId: socket.id,
                         who: message.playerName
                     });
 
-                    //
+                    // Check if the challenge is ready to start it
                     challengeSrv.checkIfChallengeIsReadyToStart(message.challengeId)
                         .then((challengeStatus) => {
                             if(challengeStatus && challengeStatus === 'READY') {
-                                //socket.broadcast.to(message.challengeId).emit('challenge', {
                                 this.io.in(message.challengeId).emit('challenge', {
                                     challengeId: message.challengeId,
                                     event: 'startedChallenge',
                                     status: 'READY'
                                 });
                             } else {
-                                //socket.broadcast.to(message.challengeId).emit('challenge', {
-                                this.io.in(message.challengeId).emit('challenge', {
+                                socket.to(message.challengeId).emit('challenge', {
                                     msg: 'player joined, waiting the other one'
                                 });
                             }
                         })  
-                        .catch(() => socket.broadcast.to(message.challengeId).emit('challenge', { err: 'Challenge not allowed' }));
+                        .catch(() => socket.broadcast.to(message.challengeId).emit('challenge', { 
+                            err: 'Challenge not allowed' 
+                        }));
                 } else if(message && message.event === 'codeUpdated') {
-                    //socket.broadcast.to(message.challengeId).emit('challenge', {
-                    this.io.in(message.challengeId).emit('challenge', {
+                    socket.to(message.challengeId).emit('challenge', {
                         challengeId: message.challengeId,
                         code: message.code,
                         event: 'codeUpdated',
                         playerId: socket.id,
                         who: message.who
                     });
+                } else if(message && message.event === 'challengeProgress') {
+                    message.time = null;
+                    message.attemps = null;
+                    message.playerId = socket.id;
+                    this.io.in(message.challengeId).emit('challenge', message);
                 }
             });
 
@@ -164,5 +166,5 @@ export default class Server {
     }
 }
 
-//export = Server.bootstrap().app;
+// Start it!
 Server.bootstrap().app;
