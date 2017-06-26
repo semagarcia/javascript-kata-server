@@ -19,6 +19,7 @@ import { LoginController } from './login/LoginController';
 import { RankingController } from './ranking/RankingController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
+import { EmailController } from './emails/EmailController';
 
 // Services
 import { ChallengeService } from './challenges/ChallengeService';
@@ -87,6 +88,7 @@ export default class Server {
         this.app.use('/api/ranking', RankingController);
         this.app.use('/api/training-paths', TrainingPathController);
         this.app.use('/api/users', UserController);
+        this.app.use('/api/email', EmailController);
         
         // Index.html
         this.app.get('/', (req, res) => { res.sendfile(path.resolve('public/index.html')) });
