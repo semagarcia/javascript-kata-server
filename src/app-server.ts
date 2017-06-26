@@ -23,8 +23,10 @@ import { EmailController } from './emails/EmailController';
 
 // Services
 import { ChallengeService } from './challenges/ChallengeService';
-const challengeSrv = new ChallengeService();
+import { StreamingSocketService } from './streaming/StreamingSocketService';
 
+// Initializations
+const challengeSrv = new ChallengeService();
 const config = require('./config');
 const PORT = config.port;
 
@@ -108,6 +110,7 @@ export default class Server {
 
     private sockets(): void {
         this.io = socketIO(this.server);
+        StreamingSocketService.initSocketServer(this.io);
         this.io.on('connection', (socket: SocketIO.Socket) => {
             socket.on('challenge', (message) => {
 
