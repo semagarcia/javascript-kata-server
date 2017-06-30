@@ -16,7 +16,7 @@ export interface User extends Document {
     email: string;
 
     /** */
-    rol: string
+    role: string
 
     /** */
     enabled: boolean;
@@ -25,10 +25,10 @@ export interface User extends Document {
 
 export let UserSchema = new Schema({
     name:            { type: String, required: true },
-    username:        { type: String, required: true },
+    username:        { type: String, required: true, unique: true },
     password:        { type: String, required: true },
-    email:           { type: String, required: true },
-    rol:             { type: String, required: true },
+    email:           { type: String, required: true, unique: true, lowercase: true },
+    role:            { type: String, required: true, enum: ['ADMIN', 'USER', 'GUEST'] },
     enabled:         { type: Boolean, default: true, required: true }
 }, {
     timestamps: {
