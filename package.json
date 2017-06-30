@@ -44,6 +44,10 @@
     "vm2": "^3.4.6"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "@types/passport": "^0.3.3",
+    "nodemon": "^1.11.0",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0"
   }
 }
