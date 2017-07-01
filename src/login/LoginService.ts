@@ -1,45 +1,41 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const moment = require('moment');
-const config = require('./../config');
-
 import { User, UserModel } from './../schemas/User';
+const bcrypt = require('bcryptjs');
 
 export class LoginService {
 
-    async standardLogin(username: string, password: string) {
+    /**
+     * 
+     * @param username 
+     * @param password 
+     */
+    static async standardLogin(username: string, password: string) {
         return new Promise((resolve, reject) => {
             UserModel.findOne({ username: username, enabled: true }, (err, user: User) => {
-                if(err) return reject(`Error at login: ${err}`);
+                if(err) reject(`Error at login: ${err}`);
                 if(!user) {
                     console.log(`Unexisting user: ${username}`);
-                    return reject('Error at login');
+                    reject('Error at login');
                 }
-
-                console.log('Checking user: ', user);
+                
+                // Password comparison
                 bcrypt.compare(password, user.password)
                     .then((samePasswords) => {
                         if(samePasswords) {
                             resolve({
+                                _id: user._id,
                                 name: user.name,
                                 username: user.username,
-                                rol: user.rol,
-                                token: jwt.sign({
-                                    sub: user._id,  // Identifies token
-                                    iat: moment().unix(),  // Token creation data,
-                                    exp: moment().add(60, 'minutes').unix(),  // Expires in 60 minutes
-                                    name: user.username,
-                                    rol: user.rol
-                                }, config.secretJWT)
+                                role: user.role
                             });
                         } else {
-                            reject(false);
+                            reject(err);
                         }
                     })
                     .catch((err) => {
                         console.log(`Mismatch error: ${err}`);
                         reject(err);
-                    });
+                    }
+                );
             });
         });
     }

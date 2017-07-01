@@ -7,7 +7,6 @@ import * as http from 'http';
 import * as socketIO from 'socket.io';
 import * as cors from 'cors';
 import * as mongoose from 'mongoose';
-import * as passport from 'passport/lib';
 import * as expressSession from 'express-session';
 
 // Route controllers
@@ -23,10 +22,17 @@ import { EmailController } from './emails/EmailController';
 
 // Services
 import { ChallengeService } from './challenges/ChallengeService';
+import { UsersService } from './users/UserService';
 import { StreamingSocketService } from './streaming/StreamingSocketService';
+
+// PassportJS configuration
+const passport = require('passport');
+import { initLocalStrategy } from './login/LoginLocalStrategy';
+import { initJWTStrategy } from './auth/JwtTokenStrategy';
 
 // Initializations
 const challengeSrv = new ChallengeService();
+const userSrv = new UsersService();
 const config = require('./config');
 const PORT = config.port;
 
@@ -44,6 +50,7 @@ export default class Server {
         this.createApp();
         this.connectToDatabase();
         this.createServer();
+        this.initializeSecurityMiddlewares();
         this.middleware();
         this.routes();
         this.sockets();
@@ -63,6 +70,27 @@ export default class Server {
         this.server = http.createServer(this.app);
     }
 
+    private initializeSecurityMiddlewares() {
+        initLocalStrategy(passport);
+        initJWTStrategy(passport);
+
+        passport.serializeUser((user, done) => {
+            return done(null, user._id);
+        });
+        passport.deserializeUser((userId, done) => {
+            userSrv.getUserInfoById(userId)
+                .then((user) => {
+                    return done(null, user);
+                })
+                .catch((err) => { 
+                    return done({ error: 'ER-L-101', message: 'Error login' }, null); 
+                });
+        });
+
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+    }
+
     private middleware(): void {
         this.app.use(logger('dev'));
         this.app.use(cookieParser());
@@ -70,7 +98,7 @@ export default class Server {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(expressSession({ secret : 'averylongstringtouseaspassword' }));
 
-        //cors settings
+        //cors settingss
         this.app.use(function(req, res, next) {
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
@@ -93,19 +121,8 @@ export default class Server {
         this.app.use('/api/email', EmailController);
         
         // Index.html
-        this.app.get('/', (req, res) => { res.sendfile(path.resolve('public/index.html')) });
-
-        // JS and CSS files
-        this.app.get('/:file', (req, res) => {
-            res.sendfile(path.resolve('public/' + req.params.file));
-        });
-
-        // Images and fonts
-        this.app.get('/assets/images/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/images/' + req.params.staticFile)) });
-        this.app.get('/assets/fonts/noto/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/fonts/noto/' + req.params.staticFile)) });
-        this.app.get('/assets/fonts/roboto/:staticFile', (req, res) => { res.sendfile(path.resolve('public/assets/fonts/roboto/' + req.params.staticFile)) });
-        //this.app.use(express.static(path.join(__dirname, 'public')));
-        //this.app.use('/assets/images', express.static(path.join(__dirname, 'public/assets/images')));
+        //this.app.get('/', (req, res) => { res.sendfile(path.resolve('public/index.html')) });
+        this.app.use(express.static('public'));
     }
 
     private sockets(): void {
