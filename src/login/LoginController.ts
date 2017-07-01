@@ -19,7 +19,7 @@ const loginRouter: Router = Router();
  */
 loginRouter.post('/', passport.authenticate('local', {
     failureRedirect: '/login?error=failure',
-}), async(req: Request, res: Response) => {
+}), async(req, res: Response) => {
     // req.user is the result of done() call in passport.use strategy callback
     let loggedUser: User = req.user;
     await AuthUtil.generateJwtToken(loggedUser)
@@ -38,7 +38,7 @@ loginRouter.post('/', passport.authenticate('local', {
  */
 loginRouter.get('/session', [
     passport.authenticate('jwt'), AuthPolicies.requiresLogin
-], async(req: Request, res: Response) => {
+], async(req, res: Response) => {
     res.json({ session: req.user })
 });
 
@@ -47,7 +47,7 @@ loginRouter.get('/session', [
  * Verb:
  * Route: 
  */
-loginRouter.delete('/', async(req: Request, res: Response) => {
+loginRouter.delete('/', async(req, res: Response) => {
     req.logout();
     res.status(200).send();
 });
