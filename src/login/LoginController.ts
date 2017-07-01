@@ -21,7 +21,7 @@ loginRouter.post('/', passport.authenticate('local', {
     failureRedirect: '/login?error=failure',
 }), async(req, res: Response) => {
     // req.user is the result of done() call in passport.use strategy callback
-    let loggedUser: User = req.user;
+    let loggedUser: User = req['user'];
     await AuthUtil.generateJwtToken(loggedUser)
         .then(jwtToken => {
             loggedUser['token'] = jwtToken;
@@ -48,7 +48,7 @@ loginRouter.get('/session', [
  * Route: 
  */
 loginRouter.delete('/', async(req, res: Response) => {
-    req.logout();
+    req['logout']();
     res.status(200).send();
 });
 
