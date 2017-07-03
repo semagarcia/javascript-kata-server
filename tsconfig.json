@@ -4,7 +4,6 @@
     "module": "commonjs",
     "outDir": "dist",
     "types": [
-      "core-js", 
       "node"
     ],
     "typeRoots": [ 
