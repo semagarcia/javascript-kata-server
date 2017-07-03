@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { EventService } from './EventService';
 import { AuthPolicies } from './../auth/AuthPolicies';
+const passport = require('passport');
 
 // Dependencies
 const eventSrv: EventService = new EventService();
@@ -24,7 +25,11 @@ eventsRouter.get('/', async (req: Request, res: Response) => {
  * Verb: GET
  * Route: /api/events
  */
-eventsRouter.get('/all', AuthPolicies.requiresRole('ADMIN'), async(req: Request, res: Response) => {
+eventsRouter.get('/all', [
+    passport.authenticate('jwt'),
+    AuthPolicies.requiresLogin,
+    AuthPolicies.requiresRole(AuthPolicies.ROLES.ADMIN)
+], async(req: Request, res: Response) => {
     await eventSrv.getAllInfoOfEvents()
         .then((events) => res.status(200).send(events))
         .catch((err) => res.status(400).send('KO')); 
