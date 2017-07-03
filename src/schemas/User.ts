@@ -1,6 +1,26 @@
 import { Schema, Document, Model, model } from 'mongoose';
 const bcrypt = require('bcryptjs');
 
+// This class will simulate the enum based on string, with aditional utility methods
+export class ROLES {
+    constructor(public literalValue: string) {}
+
+    static ADMIN = new ROLES('ADMIN').literalValue;
+    static USER = new ROLES('USER').literalValue;
+    static GUEST = new ROLES('GUEST').literalValue;
+
+    /**
+     * Returns an array with all roles defined
+     */
+    static getValues() { 
+        return [
+            ROLES.ADMIN,
+            ROLES.USER,
+            ROLES.GUEST
+        ];
+    }
+}
+
 export interface User extends Document {
 
     /** */
@@ -16,7 +36,7 @@ export interface User extends Document {
     email: string;
 
     /** */
-    role: string
+    role: ROLES;
 
     /** */
     enabled: boolean;
@@ -28,8 +48,8 @@ export let UserSchema = new Schema({
     username:        { type: String, required: true, unique: true },
     password:        { type: String, required: true },
     email:           { type: String, required: true, unique: true, lowercase: true },
-    role:            { type: String, required: true, enum: ['ADMIN', 'USER', 'GUEST'] },
-    enabled:         { type: Boolean, default: true, required: true }
+    role:            { type: String, required: true, enum: ROLES.getValues() },
+    enabled:         { type: Boolean, required: true, default: true }
 }, {
     timestamps: {
         createdAt: 'createdAt',
