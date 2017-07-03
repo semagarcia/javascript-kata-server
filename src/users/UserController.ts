@@ -40,7 +40,7 @@ userRouter.get('/session', [
     passport.authenticate('jwt'), 
     AuthPolicies.requiresLogin
 ], async(req, res: Response) => {
-    res.json({ session: req.user })
+    res.json(req.user)
 });
 
 /**
