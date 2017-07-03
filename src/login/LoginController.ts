@@ -3,7 +3,6 @@ import { AuthUtil } from './../auth/AuthUtil';
 import { AuthPolicies } from './../auth/AuthPolicies';
 import { LoginService } from './LoginService';
 import { User } from './../schemas/User';
-
 const passport = require('passport');
 
 // Dependencies
@@ -13,9 +12,9 @@ const loginSrv: LoginService = new LoginService();
 const loginRouter: Router = Router();
 
 /**
- * Method:
- * Verb:
- * Route: 
+ * Method: Standard login
+ * Verb: POST
+ * Route: /api/login
  */
 loginRouter.post('/', passport.authenticate('local', {
     failureRedirect: '/login?error=failure',
@@ -32,22 +31,12 @@ loginRouter.post('/', passport.authenticate('local', {
 });
 
 /**
- * Method:
- * Verb:
- * Route: 
+ * Method: Logout and delete the user session
+ * Verb: DELETE
+ * Route: /api/login
+ * Access conditions: The user have to be logged
  */
-loginRouter.get('/session', [
-    passport.authenticate('jwt'), AuthPolicies.requiresLogin
-], async(req, res: Response) => {
-    res.json({ session: req.user })
-});
-
-/**
- * Method:
- * Verb:
- * Route: 
- */
-loginRouter.delete('/', async(req, res: Response) => {
+loginRouter.delete('/', [AuthPolicies.requiresLogin], async(req, res: Response) => {
     req['logout']();
     res.status(200).send();
 });
