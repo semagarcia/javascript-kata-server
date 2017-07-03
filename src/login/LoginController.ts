@@ -34,9 +34,8 @@ loginRouter.post('/', passport.authenticate('local', {
  * Method: Logout and delete the user session
  * Verb: DELETE
  * Route: /api/login
- * Access conditions: The user have to be logged
  */
-loginRouter.delete('/', [AuthPolicies.requiresLogin], async(req, res: Response) => {
+loginRouter.delete('/', async(req, res: Response) => {
     req['logout']();
     res.status(200).send();
 });
