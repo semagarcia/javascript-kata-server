@@ -10,15 +10,17 @@ import * as mongoose from 'mongoose';
 import * as expressSession from 'express-session';
 
 // Route controllers
+import { AdministrationController } from './administration/AdministrationController';
 import { ChallengesController } from './challenges/ChallengeController';
+import { EmailController } from './emails/EmailController';
 import { EventsController } from './events/EventController';
 import { IndividualController } from './individual/IndividualController';
 import { KatasController } from './katas/KatasController';
 import { LoginController } from './login/LoginController';
 import { RankingController } from './ranking/RankingController';
+import { SettingsController } from './settings/SettingsController';
 import { TrainingPathController } from './training/TrainingController';
 import { UserController } from './users/UserController';
-import { EmailController } from './emails/EmailController';
 
 // Services
 import { ChallengeService } from './challenges/ChallengeService';
@@ -59,6 +61,7 @@ export default class Server {
 
     private createApp(): void {
         this.app = express();
+        this.app.set('etag', false);  // Disable etag
     }
 
     private connectToDatabase(): void {
@@ -109,19 +112,19 @@ export default class Server {
     }
 
     private routes(): void {
-        this.app.use('/api/status', (req, res, next) => { res.status(200).send('OK') });
+        this.app.use('/api/admin', AdministrationController);
         this.app.use('/api/challenges', ChallengesController);
+        this.app.use('/api/email', EmailController);
         this.app.use('/api/events', EventsController);
         this.app.use('/api/individual', IndividualController);
         this.app.use('/api/katas', KatasController);
         this.app.use('/api/login', LoginController);
         this.app.use('/api/ranking', RankingController);
+        this.app.use('/api/settings', SettingsController);
         this.app.use('/api/training-paths', TrainingPathController);
         this.app.use('/api/users', UserController);
-        this.app.use('/api/email', EmailController);
         
         // Index.html
-        //this.app.get('/', (req, res) => { res.sendfile(path.resolve('public/index.html')) });
         this.app.use(express.static('public'));
     }
 
