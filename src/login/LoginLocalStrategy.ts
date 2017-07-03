@@ -19,7 +19,6 @@ export function initLocalStrategy(passport: Passport) {
         passReqToCallback: true
     }, (req: Request, username: string, password: string, next: Function) => {
         UserModel.findOne({ username: username, enabled: true }, async (err, user: User) => {
-            console.log('LoginLocalStrategy');
             if(err || !user) return next(err, `Error at login: ${err}`);
             await LoginService.standardLogin(username, password)
                 .then(loggedUser => next(null, loggedUser))
