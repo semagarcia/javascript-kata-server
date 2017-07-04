@@ -10,6 +10,7 @@ import * as mongoose from 'mongoose';
 import * as expressSession from 'express-session';
 
 // Route controllers
+import { AuthController } from './auth/AuthController';
 import { AdministrationController } from './administration/AdministrationController';
 import { ChallengesController } from './challenges/ChallengeController';
 import { EmailController } from './emails/EmailController';
@@ -31,6 +32,7 @@ import { StreamingSocketService } from './streaming/StreamingSocketService';
 const passport = require('passport');
 import { initLocalStrategy } from './login/LoginLocalStrategy';
 import { initJWTStrategy } from './auth/JwtTokenStrategy';
+import { initGitHubtrategy } from './auth/GitHubStrategy';
 
 // Initializations
 const challengeSrv = new ChallengeService();
@@ -74,8 +76,12 @@ export default class Server {
     }
 
     private initializeSecurityMiddlewares() {
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+
         initLocalStrategy(passport);
         initJWTStrategy(passport);
+        initGitHubtrategy(passport);
 
         passport.serializeUser((user, done) => {
             return done(null, user._id);
@@ -89,9 +95,6 @@ export default class Server {
                     return done({ error: 'ER-L-101', message: 'Error login' }, null); 
                 });
         });
-
-        this.app.use(passport.initialize());
-        this.app.use(passport.session());
     }
 
     private middleware(): void {
@@ -112,6 +115,11 @@ export default class Server {
     }
 
     private routes(): void {
+        // Index.html
+        this.app.use(express.static('public'));
+
+        // Routes
+        this.app.use('/auth', AuthController);
         this.app.use('/api/admin', AdministrationController);
         this.app.use('/api/challenges', ChallengesController);
         this.app.use('/api/email', EmailController);
@@ -123,9 +131,9 @@ export default class Server {
         this.app.use('/api/settings', SettingsController);
         this.app.use('/api/training-paths', TrainingPathController);
         this.app.use('/api/users', UserController);
-        
-        // Index.html
-        this.app.use(express.static('public'));
+
+        // Default redirect
+        this.app.use('/**', (req, res) => { res.sendFile('./../public/index.html', { root: __dirname }) });
     }
 
     private sockets(): void {
