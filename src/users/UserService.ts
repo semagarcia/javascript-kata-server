@@ -1,4 +1,4 @@
-import { User, UserModel } from './../schemas/User';
+import { ROLES, User, UserModel } from './../schemas/User';
 
 const bcrypt = require('bcryptjs');
 const config = require('./../config');
@@ -57,6 +57,39 @@ export class UsersService {
                 .catch((err) => {
                     reject(err);
                 });
+        });
+    }
+
+    async findOrCreateUserByGitHub(githubProfile) {
+        return new Promise((resolve, reject) => {
+            UserModel.findOne({ 
+                'github.username': githubProfile.username, 
+                enabled: true 
+            }, (err, user: User) => {
+                if(err) reject(err);
+                if(!user) {
+                    // User not found... create it and insert into database
+                    UserModel.create({
+                        name: githubProfile.displayName,
+                        username: githubProfile.username,
+                        password: githubProfile.id,
+                        email: githubProfile._json.email,
+                        role: ROLES.USER,
+                        github: {
+                            id: githubProfile.id,
+                            username: githubProfile.username,
+                            displayName: githubProfile.displayName,
+                            avatarUrl: githubProfile._json.avatar_url,
+                        }
+                    }, (err, newUser) => {
+                        if(err) reject(err);
+                        resolve(newUser);
+                    });
+                } else {
+                    // User already exists...
+                    resolve(user);
+                }
+            })
         });
     }
 
