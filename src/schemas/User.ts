@@ -47,7 +47,7 @@ export let UserSchema = new Schema({
     name:            { type: String, required: true },
     username:        { type: String, required: true, unique: true },
     password:        { type: String, required: true },
-    email:           { type: String, required: false, unique: true, lowercase: true },
+    email:           { type: String, required: false, lowercase: true },
     role:            { type: String, required: true, enum: ROLES.getValues() },
     enabled:         { type: Boolean, required: true, default: true },
     github:          {
