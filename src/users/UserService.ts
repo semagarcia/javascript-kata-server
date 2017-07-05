@@ -73,10 +73,10 @@ export class UsersService {
                 if(!user) {
                     // User not found... create it and insert into database
                     UserModel.create({
-                        name: githubProfile.displayName,
+                        name: githubProfile.displayName || githubProfile.username,
                         username: githubProfile.username,
                         password: 'github_auth',
-                        email: githubProfile._json.email,
+                        email: githubProfile._json.email || (githubProfile.username + '@no-provided.com'),
                         role: ROLES.USER,
                         github: {
                             id: githubProfile.id,
