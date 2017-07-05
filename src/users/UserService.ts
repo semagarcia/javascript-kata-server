@@ -76,7 +76,7 @@ export class UsersService {
                         name: githubProfile.displayName || githubProfile.username,
                         username: githubProfile.username,
                         password: 'github_auth',
-                        email: githubProfile._json.email || (githubProfile.username + '@no-provided.com'),
+                        email: githubProfile._json.email || (githubProfile.username + '@not-provided.com'),
                         role: ROLES.USER,
                         github: {
                             id: githubProfile.id,
