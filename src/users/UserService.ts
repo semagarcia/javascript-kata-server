@@ -66,13 +66,16 @@ export class UsersService {
                 'github.username': githubProfile.username, 
                 enabled: true 
             }, (err, user: User) => {
-                if(err) reject(err);
+                if(err) {
+                    console.log('[GITHUB AUTH] Error finding user ', githubProfile.username);
+                    reject(err);
+                }
                 if(!user) {
                     // User not found... create it and insert into database
                     UserModel.create({
                         name: githubProfile.displayName,
                         username: githubProfile.username,
-                        password: githubProfile.id,
+                        password: 'github_auth',
                         email: githubProfile._json.email,
                         role: ROLES.USER,
                         github: {
@@ -82,7 +85,10 @@ export class UsersService {
                             avatarUrl: githubProfile._json.avatar_url,
                         }
                     }, (err, newUser) => {
-                        if(err) reject(err);
+                        if(err) {
+                            console.log('[GITHUB AUTH] Error creating GH_AUTH user: ', err);
+                            reject(err);
+                        }
                         resolve(newUser);
                     });
                 } else {

@@ -23,7 +23,7 @@ authRouter.get('/github/callback',
     }),
     async (req, res) => {
         // Get the user info and generate the token
-        console.log('req.user: ', req['user']);
+        console.log('[GITHUB AUTH] req.user: ', req['user']);
         await AuthUtil.generateJwtToken({
             _id: req['user']._id,
             name: req['user'].name,
@@ -31,7 +31,11 @@ authRouter.get('/github/callback',
             role: req['user'].role
         })
         .then(jwtToken => res.redirect(`/#/login;token=${jwtToken}`))
-        .catch(err => res.status(500).json({ error: 'ER-A-100', message: 'Error from GitHub authorization' }));
+        .catch(err => {
+            console.log('[GITHUB AUTH] Error generating JWT Token after a successful GH Auth: ', err);
+            //res.status(500).json({ error: 'ER-AU-GH100', message: 'Error from GitHub authorization' });
+            res.redirect('/#/login;error=ER-AU-GH100');
+        });
     }
 );
 
