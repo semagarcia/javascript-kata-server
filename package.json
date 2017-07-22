@@ -10,7 +10,7 @@
     "ts-node": "ts-node"
   },
   "engines": {
-    "node": "7.9.0",
+    "node": "7.10.1",
     "npm": "4.2.0"
   },
   "author": "Sema García",
